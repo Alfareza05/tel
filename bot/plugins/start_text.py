@@ -1,44 +1,31 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# (c) Shrimadhav U K
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-
-# You should have received a copy of the GNU Affero General Public License
-# along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-from pyrogram import (
-    Client,
-    filters
-)
+from pyrogram import filters
 from pyrogram.types import (
-    Message
-)
-from bot import (
-    AKTIFPERINTAH,
-    COMMM_AND_PRE_FIX,
-    START_COMMAND,
-    START_OTHER_USERS_TEXT,
-    INPUT_PHONE_NUMBER
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
 )
 
+from sessionMaker import sessionCli
 
-@Client.on_message(
-    filters.command(START_COMMAND, COMMM_AND_PRE_FIX) &
-    filters.private
-)
-async def num_start_message(_, message: Message):
-    AKTIFPERINTAH[message.chat.id] = {}
-    status_message = await message.reply_text(
-        START_OTHER_USERS_TEXT + "\n" + INPUT_PHONE_NUMBER
+START_MESSAGE = (
+        'Hello there!\n'
+        'I can generate session of [pyrogram](https://t.me/pyrogram) and [telethon](https://t.me/TelethonUpdates).\n\n'
+        '**Note**: We don\'t collect or log users\' credentials.\n'
+        'If something happens to your account, we aren\'t responsible for it.\n\n'
+        'If you want to host your own bot then here is the github repo under the terms of the [GNU General Public License v3.0](https://github.com/meanii/sessionMaker/blob/master/LICENSE).\n'
+        '> https://github.com/meanii/sessionMaker\n\n'
+        'News channel: @spookyanii\n'
+        'Support chat: @nina77chat' 
     )
-    AKTIFPERINTAH[message.chat.id]["START"] = status_message
-    raise message.stop_propagation()
+
+KEYBOARD = InlineKeyboardMarkup(
+    [[InlineKeyboardButton(text='Pyrogram', callback_data='sele_pyrogram')],
+    [InlineKeyboardButton(text='Telethon', callback_data='sele_telethon')]]
+)
+
+@sessionCli.on_message(filters.command('start'))
+async def start(sessionCli, message):
+    await message.reply(
+        text=START_MESSAGE,
+        reply_markup=KEYBOARD,
+        disable_web_page_preview=True
+    )
